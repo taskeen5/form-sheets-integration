@@ -4,6 +4,36 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Form Submission</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 50px auto;
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+    }
+    input, textarea, button {
+      display: block;
+      width: 100%;
+      margin: 10px 0;
+      padding: 10px;
+      font-size: 16px;
+    }
+    button {
+      background: #0073e6;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #005bb5;
+    }
+    #status {
+      margin-top: 10px;
+      font-weight: bold;
+    }
+  </style>
 </head>
 <body>
   <h1>Contact Form</h1>
@@ -29,19 +59,28 @@
         message: form.message.value,
       };
 
+      status.textContent = "Submitting...";
+      status.style.color = "black";
+
       try {
-        // Better to use the API route instead of hardcoding .netlify path
-        const response = await fetch("/api/submit-form", {
+        const response = await fetch("/.netlify/functions/submit-form", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(formData),
         });
 
         const result = await response.json();
-        status.textContent = result.message || "Form submitted!";
-        status.style.color = "green";
-        form.reset();
+
+        if (response.ok) {
+          status.textContent = result.message || "Form submitted successfully!";
+          status.style.color = "green";
+          form.reset();
+        } else {
+          status.textContent = result.error || "Something went wrong!";
+          status.style.color = "red";
+        }
       } catch (error) {
+        console.error("Error submitting form:", error);
         status.textContent = "Error submitting form.";
         status.style.color = "red";
       }
