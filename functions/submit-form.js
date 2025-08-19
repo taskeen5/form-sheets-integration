@@ -11,9 +11,13 @@ exports.handler = async (event, context) => {
         const body = JSON.parse(event.body);
         console.log('Received data:', body);
 
-        // Decode the base64 private key
-        const privateKey = Buffer.from(process.env.GOOGLE_PRIVATE_KEY, 'base64').toString('utf8');
-        console.log('Decoded private key first few chars:', privateKey.substring(0, 50));
+        // DECODE and CLEAN the base64 private key
+        const privateKey = Buffer.from(process.env.GOOGLE_PRIVATE_KEY, 'base64')
+          .toString('utf8')
+          .trim()
+          .replace(/\r/g, '');
+        
+        console.log('Private key cleaned successfully');
 
         const auth = new google.auth.GoogleAuth({
             credentials: {
