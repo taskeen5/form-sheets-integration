@@ -1,54 +1,31 @@
-const { google } = require('googleapis');
+async function handleSubmit(event) {
+  event.preventDefault();
 
-exports.handler = async (event, context) => {
-    console.log('=== FUNCTION CALLED ===');
-    
-    if (event.httpMethod !== 'POST') {
-        return { statusCode: 405, body: 'Method Not Allowed' };
+  const formData = {
+    name: document.getElementById("name").value,
+    email: document.getElementById("email").value,
+    message: document.getElementById("message").value,
+  };
+
+  try {
+    const response = await fetch("/.netlify/functions/submit-form", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(formData),
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      // Server responded with error
+      alert(`Error: ${result.error || "Something went wrong!"}`);
+    } else {
+      // Success
+      alert(result.message);
+      document.getElementById("contactForm").reset();
     }
-
-    try {
-        const body = JSON.parse(event.body);
-        console.log('Received data:', body);
-
-        // Use the private key directly with replaced newlines
-        const privateKey = process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n');
-        console.log('Private key processed successfully');
-
-        const auth = new google.auth.GoogleAuth({
-            credentials: {
-                client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
-                private_key: privateKey,
-            },
-            scopes: ['https://www.googleapis.com/auth/spreadsheets'],
-        });
-
-        const sheets = google.sheets({ version: 'v4', auth });
-        const spreadsheetId = process.env.GOOGLE_SHEET_ID;
-
-        console.log('Attempting to append to sheet:', spreadsheetId);
-        
-        await sheets.spreadsheets.values.append({
-            spreadsheetId,
-            range: 'FormData!A:D',
-            valueInputOption: 'RAW',
-            requestBody: {
-                values: [[body.name, body.email, body.message, new Date().toISOString()]],
-            },
-        });
-
-        console.log('✅ Data saved successfully!');
-
-        return {
-            statusCode: 200,
-            body: JSON.stringify({ message: 'Data saved successfully!' }),
-        };
-    } catch (error) {
-        console.error('❌ FULL ERROR:', error.message);
-        console.error('Error stack:', error.stack);
-        return {
-            statusCode: 500,
-            body: JSON.stringify({ error: error.message }),
-        };
-    }
-};
+  } catch (err) {
+    console.error("❌ Fetch failed:", err);
+    alert("Network error. Please try again later.");
+  }
+}
