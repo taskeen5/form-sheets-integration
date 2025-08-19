@@ -30,7 +30,8 @@
       };
 
       try {
-        const response = await fetch("/.netlify/functions/submit-form", {
+        // Better to use the API route instead of hardcoding .netlify path
+        const response = await fetch("/api/submit-form", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(formData),
