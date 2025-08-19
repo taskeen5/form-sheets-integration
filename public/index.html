@@ -1,30 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Contact Form</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Form Submission</title>
 </head>
 <body>
-  <h2>Contact Us</h2>
-
-  <form id="contactForm">
-    <label for="name">Name:</label>
-    <input type="text" id="name" name="name" required><br><br>
-
-    <label for="email">Email:</label>
-    <input type="email" id="email" name="email" required><br><br>
-
-    <label for="message">Message:</label><br>
-    <textarea id="message" name="message" required></textarea><br><br>
-
-    <button type="submit">Submit</button>
+  <h1>Contact Form</h1>
+  <form id="contact-form">
+    <input type="text" name="name" placeholder="Your Name" required />
+    <input type="email" name="email" placeholder="Your Email" required />
+    <textarea name="message" placeholder="Your Message" required></textarea>
+    <button type="submit">Send</button>
   </form>
 
-  <!-- Link to your JS -->
+  <!-- Load the JS file -->
   <script src="submit-form.js"></script>
-  <script>
-    document.getElementById("contactForm").addEventListener("submit", handleSubmit);
-  </script>
 </body>
 </html>
