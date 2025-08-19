@@ -14,7 +14,37 @@
     <button type="submit">Send</button>
   </form>
 
-  <!-- Load the JS file -->
-  <script src="submit-form.js"></script>
+  <p id="status"></p>
+
+  <script>
+    const form = document.getElementById("contact-form");
+    const status = document.getElementById("status");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const formData = {
+        name: form.name.value,
+        email: form.email.value,
+        message: form.message.value,
+      };
+
+      try {
+        const response = await fetch("/.netlify/functions/submit-form", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        });
+
+        const result = await response.json();
+        status.textContent = result.message || "Form submitted!";
+        status.style.color = "green";
+        form.reset();
+      } catch (error) {
+        status.textContent = "Error submitting form.";
+        status.style.color = "red";
+      }
+    });
+  </script>
 </body>
 </html>
