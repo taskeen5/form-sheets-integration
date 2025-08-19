@@ -1,34 +1,33 @@
 const { google } = require('googleapis');
 
 exports.handler = async (event, context) => {
-    // Add CORS headers
     const headers = {
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Headers': 'Content-Type',
         'Access-Control-Allow-Methods': 'POST, OPTIONS'
     };
 
-    // Handle preflight OPTIONS request
+    // Handle CORS preflight
     if (event.httpMethod === 'OPTIONS') {
-        return {
-            statusCode: 200,
-            headers,
-            body: ''
-        };
+        return { statusCode: 200, headers, body: '' };
     }
-    
+
+    // Only allow POST
     if (event.httpMethod !== 'POST') {
         return {
             statusCode: 405,
             headers,
-            body: 'Method Not Allowed'
+            body: JSON.stringify({ error: 'Method Not Allowed' })
         };
     }
 
     try {
         const body = JSON.parse(event.body);
-        
-        // Your existing Google Sheets code here...
+        const { name, email, message } = body;
+
+        console.log("📩 Incoming form data:", body);
+
+        // Google Auth
         const privateKey = process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n');
         const auth = new google.auth.GoogleAuth({
             credentials: {
@@ -39,25 +38,37 @@ exports.handler = async (event, context) => {
         });
 
         const sheets = google.sheets({ version: 'v4', auth });
-        await sheets.spreadsheets.values.append({
-            spreadsheetId: process.env.GOOGLE_SHEET_ID,
-            range: 'FormData!A:D',
+        const spreadsheetId = process.env.GOOGLE_SHEET_ID;
+
+        console.log("✅ Appending to spreadsheet:", spreadsheetId);
+
+        // Append to sheet
+        const response = await sheets.spreadsheets.values.append({
+            spreadsheetId,
+            range: 'FormData!A:D', // ⚠️ make sure your sheet tab is named "FormData"
             valueInputOption: 'RAW',
             requestBody: {
-                values: [[body.name, body.email, body.message, new Date().toISOString()]],
+                values: [[name, email, message, new Date().toISOString()]],
             },
         });
+
+        console.log("✅ Google API response:", response.data);
 
         return {
             statusCode: 200,
             headers,
-            body: JSON.stringify({ message: 'Data saved successfully!' })
+            body: JSON.stringify({ message: 'Data saved successfully!' }),
         };
     } catch (error) {
+        console.error("❌ Full error object:", error);
+
         return {
             statusCode: 500,
             headers,
-            body: JSON.stringify({ error: error.message })
+            body: JSON.stringify({
+                error: error.message || "Unknown error",
+                details: error.errors || error.stack || error
+            }),
         };
     }
 };
