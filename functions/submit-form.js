@@ -1,21 +1,22 @@
-const { google } = require('googleapis');
+const { google } = require("googleapis");
 
 exports.handler = async (event, context) => {
   const headers = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'Content-Type',
-    'Access-Control-Allow-Methods': 'POST, OPTIONS'
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "Content-Type",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
   };
 
-  if (event.httpMethod === 'OPTIONS') {
-    return { statusCode: 200, headers, body: '' };
+  // ✅ Handle CORS preflight
+  if (event.httpMethod === "OPTIONS") {
+    return { statusCode: 200, headers, body: "" };
   }
 
-  if (event.httpMethod !== 'POST') {
+  if (event.httpMethod !== "POST") {
     return {
       statusCode: 405,
       headers,
-      body: JSON.stringify({ error: 'Method Not Allowed' })
+      body: JSON.stringify({ error: "Method Not Allowed" }),
     };
   }
 
@@ -25,19 +26,28 @@ exports.handler = async (event, context) => {
 
     console.log("📩 Incoming form data:", body);
 
-    // ✅ Handle both formats (multi-line OR \n escaped)
-    let privateKey = process.env.GOOGLE_PRIVATE_KEY || "";
+    // ✅ Load private key safely
+    let rawKey = process.env.GOOGLE_PRIVATE_KEY || "";
 
-    if (privateKey.includes("\\n")) {
-      privateKey = privateKey.replace(/\\n/g, "\n");
+    // Convert escaped newlines → real newlines
+    if (rawKey.includes("\\n")) {
+      rawKey = rawKey.replace(/\\n/g, "\n");
     }
 
-    privateKey = privateKey.replace(/\r/g, ""); // remove carriage returns
+    // Remove stray carriage returns
+    rawKey = rawKey.replace(/\r/g, "");
+
+    // Debug log only parts of the key (never full key!)
+    console.log("🔑 Loaded Google Private Key:", {
+      start: rawKey.slice(0, 30),
+      end: rawKey.slice(-30),
+      length: rawKey.length,
+    });
 
     const auth = new google.auth.GoogleAuth({
       credentials: {
         client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
-        private_key: privateKey,
+        private_key: rawKey,
       },
       scopes: ["https://www.googleapis.com/auth/spreadsheets"],
     });
