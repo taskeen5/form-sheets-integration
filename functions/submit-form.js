@@ -37,18 +37,16 @@ exports.handler = async (event, context) => {
     // Remove stray carriage returns
     rawKey = rawKey.replace(/\r/g, "");
 
-    // Debug log only parts of the key (never full key!)
-    console.log("🔑 Loaded Google Private Key:", {
+    console.log("🔑 Loaded Google Private Key (masked):", {
       start: rawKey.slice(0, 30),
       end: rawKey.slice(-30),
       length: rawKey.length,
     });
 
-    const auth = new google.auth.GoogleAuth({
-      credentials: {
-        client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
-        private_key: rawKey,
-      },
+    // ✅ Use JWT instead of GoogleAuth to avoid OpenSSL issue
+    const auth = new google.auth.JWT({
+      email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
+      key: rawKey,
       scopes: ["https://www.googleapis.com/auth/spreadsheets"],
     });
 

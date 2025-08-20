@@ -1,3 +1,10 @@
 [build]
   functions = "functions"
   publish = "public"
+
+[functions]
+  node_bundler = "esbuild"
+
+# ✅ Force Node.js version (fix OpenSSL unsupported error)
+[functions.environment]
+  NODE_VERSION = "16"
