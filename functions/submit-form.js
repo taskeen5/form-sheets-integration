@@ -27,8 +27,12 @@ exports.handler = async (event, context) => {
 
         console.log("📩 Incoming form data:", body);
 
-        // Google Auth
-        const privateKey = process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n');
+        // ✅ Fix private key formatting (handles both \n and real line breaks)
+        let privateKey = process.env.GOOGLE_PRIVATE_KEY;
+        if (privateKey.includes('\\n')) {
+            privateKey = privateKey.replace(/\\n/g, '\n'); // case: Netlify stores escaped newlines
+        }
+
         const auth = new google.auth.GoogleAuth({
             credentials: {
                 client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
