@@ -3,48 +3,97 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Form Submission</title>
+  <title>📊 Smart Contact Form</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      max-width: 600px;
-      margin: 50px auto;
-      padding: 20px;
-      border: 1px solid #ddd;
-      border-radius: 8px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f3f4f6;
+      color: #333;
     }
-    input, textarea, button {
+
+    header {
+      background: linear-gradient(135deg, #6366f1, #4f46e5);
+      color: white;
+      text-align: center;
+      padding: 40px 20px;
+      border-bottom-left-radius: 40px;
+      border-bottom-right-radius: 40px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+
+    header h1 {
+      font-size: 2.2em;
+      margin-bottom: 10px;
+    }
+
+    header p {
+      font-size: 1.1em;
+      opacity: 0.9;
+    }
+
+    main {
+      max-width: 600px;
+      margin: -40px auto 50px;
+      background: white;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+    }
+
+    form input, form textarea, form button {
       display: block;
       width: 100%;
-      margin: 10px 0;
-      padding: 10px;
+      margin: 12px 0;
+      padding: 12px;
       font-size: 16px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
     }
-    button {
-      background: #0073e6;
+
+    form textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    form button {
+      background: #4f46e5;
       color: white;
       border: none;
-      cursor: pointer;
-    }
-    button:hover {
-      background: #005bb5;
-    }
-    #status {
-      margin-top: 10px;
+      font-size: 17px;
       font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    form button:hover {
+      background: #3730a3;
+    }
+
+    #status {
+      margin-top: 15px;
+      font-weight: bold;
+      text-align: center;
     }
   </style>
 </head>
 <body>
-  <h1>Contact Form</h1>
-  <form id="contact-form">
-    <input type="text" name="name" placeholder="Your Name" required />
-    <input type="email" name="email" placeholder="Your Email" required />
-    <textarea name="message" placeholder="Your Message" required></textarea>
-    <button type="submit">Send</button>
-  </form>
+  <header>
+    <h1>📊 Smart Contact Form</h1>
+    <p>Seamlessly save your submissions to Google Sheets</p>
+  </header>
 
-  <p id="status"></p>
+  <main>
+    <form id="contact-form">
+      <input type="text" name="name" placeholder="Your Name" required />
+      <input type="email" name="email" placeholder="Your Email" required />
+      <textarea name="message" placeholder="Your Message" required></textarea>
+      <button type="submit">Send Message ✉️</button>
+    </form>
+    <p id="status"></p>
+  </main>
 
   <script>
     const form = document.getElementById("contact-form");
